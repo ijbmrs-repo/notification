@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Verify IJBMRS Document</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 15px;
+      line-height: 1.6;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 15px;
+      font-size: 1em;
+      background: #004aad;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+    }
+    .valid {
+      border-color: green;
+    }
+    .invalid {
+      border-color: red;
+    }
+    a {
+      color: #004aad;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Verify IJBMRS Document</h1>
+  <p>Enter the Reference ID (example: <strong>IJBMRS/2025/01</strong>)</p>
+
+  <input id="refInput" placeholder="IJBMRS/2025/01" />
+  <button onclick="verify()">Verify</button>
+
+  <div id="result"></div>
+
+  <p style="margin-top:30px;">
+    <a href="/">← Back to Notifications</a>
+  </p>
+
+  <script src="verify.js"></script>
+</body>
+</html>
