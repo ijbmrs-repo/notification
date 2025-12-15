@@ -1,3 +1,17 @@
 {
-  "documents": []
+  "documents": [
+    {
+      "reference_id": "IJBMRS/2025/022",
+      "title": "Official Notice on Journal Title Standardization and ISSN Application Compliance",
+      "type": "Notice",
+      "author": "Chairperson",
+      "issued_by": "Office of Chairperson",
+      "issuer_email": "office.chairperson@ijbmrs.org",
+      "date": "2025-12-15",
+      "year": "2025",
+      "pdf": "/notices/2025/IJBMRS_2025_022_EN.pdf",
+      "url": "/notices/2025/notice-01.html",
+      "public": true
+    }
+  ]
 }
