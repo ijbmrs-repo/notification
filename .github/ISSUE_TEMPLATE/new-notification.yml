@@ -1,7 +1,6 @@
 name: Add New Notification
 description: Add an official IJBMRS notification, notice, circular, or office order
 title: "[Notification]: "
-type: issue
 
 body:
   - type: input
