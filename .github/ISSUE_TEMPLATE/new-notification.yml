@@ -1,0 +1,89 @@
+name: Add New Notification
+description: Add an official IJBMRS notification, notice, circular, or office order
+title: "[Notification]: "
+labels: []
+assignees: []
+
+body:
+  - type: input
+    id: reference_id
+    attributes:
+      label: Reference ID
+      description: Use existing IJBMRS format (e.g., IJBMRS/2025/01)
+      placeholder: IJBMRS/2025/01
+    validations:
+      required: true
+
+  - type: dropdown
+    id: doc_type
+    attributes:
+      label: Document Type
+      options:
+        - Notice
+        - Circular
+        - Announcement
+        - Office Order
+    validations:
+      required: true
+
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      description: Official title of the document
+      placeholder: Editorial Board Meeting Circular
+    validations:
+      required: true
+
+  - type: input
+    id: author
+    attributes:
+      label: Author / Officer
+      placeholder: Editor-in-Chief
+    validations:
+      required: true
+
+  - type: input
+    id: issued_by
+    attributes:
+      label: Issued By
+      placeholder: Office of IJBMRS
+    validations:
+      required: true
+
+  - type: input
+    id: issuer_email
+    attributes:
+      label: Issuer Email
+      placeholder: office@ijbmrs.org
+    validations:
+      required: true
+
+  - type: input
+    id: issue_date
+    attributes:
+      label: Date of Issue
+      description: Use format YYYY-MM-DD
+      placeholder: 2025-12-15
+    validations:
+      required: true
+
+  - type: input
+    id: pdf_filename
+    attributes:
+      label: PDF Filename
+      description: File must already be uploaded to notices/YYYY/ or certificates/YYYY/
+      placeholder: ijbmrs-2025-01.pdf
+    validations:
+      required: true
+
+  - type: dropdown
+    id: visibility
+    attributes:
+      label: Visibility
+      description: Certificates must be private
+      options:
+        - Public (show on main page)
+        - Private (certificate / verification only)
+    validations:
+      required: true
