@@ -1,0 +1,132 @@
+name: Generate Notification
+
+on:
+  issues:
+    types: [opened, reopened]
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Generate notification files
+        run: |
+          python << 'EOF'
+          import json, re
+          from pathlib import Path
+          from xml.etree.ElementTree import Element, SubElement, ElementTree
+
+          BASE_URL = "https://notifications.ijbmrs.org"
+
+          body = """${{ github.event.issue.body }}"""
+
+          def section(name):
+              pattern = rf"{name}\s*\n+(.+?)(?:\n\n|\Z)"
+              m = re.search(pattern, body, re.S)
+              return m.group(1).strip() if m else ""
+
+          reference_id = section("Reference ID")
+          doc_type = section("Document Type")
+          title = section("Title")
+          author = section("Author / Officer")
+          issued_by = section("Issued By")
+          issuer_email = section("Issuer Email")
+          date = section("Date of Issue")
+          pdf_filename = section("PDF Filename")
+          visibility = section("Visibility")
+
+          year = reference_id.split("/")[1]
+
+          public = visibility.lower().startswith("public")
+
+          data_file = Path("notifications.json")
+          if data_file.exists():
+              data = json.loads(data_file.read_text())
+          else:
+              data = {"documents": []}
+
+          doc_id = f"notice-{len(data['documents']) + 1:02d}"
+
+          pdf_path = f"/notices/{year}/{pdf_filename}" if public else f"/certificates/{year}/{pdf_filename}"
+          url = f"/notices/{year}/{doc_id}.html" if public else None
+
+          record = {
+              "reference_id": reference_id,
+              "title": title,
+              "type": doc_type,
+              "author": author,
+              "issued_by": issued_by,
+              "issuer_email": issuer_email,
+              "date": date,
+              "year": year,
+              "pdf": pdf_path,
+              "url": url,
+              "public": public
+          }
+
+          data["documents"].append(record)
+          data_file.write_text(json.dumps(data, indent=2))
+
+          if public:
+              out_dir = Path(f"notices/{year}")
+              out_dir.mkdir(parents=True, exist_ok=True)
+
+              html = f"""<!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <title>{title}</title>
+          </head>
+          <body>
+            <h1>{title}</h1>
+            <p><strong>Type:</strong> {doc_type}</p>
+            <p><strong>Reference ID:</strong> {reference_id}</p>
+            <p><strong>Author / Officer:</strong> {author}</p>
+            <p><strong>Issued by:</strong> {issued_by}</p>
+            <p><strong>Issuer Email:</strong> {issuer_email}</p>
+            <p><strong>Date of Issue:</strong> {date}</p>
+            <p>
+              <a href="{pdf_path}" target="_blank">
+                ⬇ Download Official PDF
+              </a>
+            </p>
+            <p><a href="/">← Back to Notifications</a></p>
+          </body>
+          </html>"""
+
+              (out_dir / f"{doc_id}.html").write_text(html)
+
+          # ---- Generate sitemap.xml ----
+          urlset = Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
+
+          def add(loc):
+              u = SubElement(urlset, "url")
+              SubElement(u, "loc").text = loc
+
+          add(BASE_URL + "/")
+
+          for d in data["documents"]:
+              if d.get("public") and d.get("url"):
+                  add(BASE_URL + d["url"])
+
+          ElementTree(urlset).write("sitemap.xml", encoding="utf-8", xml_declaration=True)
+          EOF
+
+      - name: Commit changes
+        run: |
+          git config user.name "ijbmrs-bot"
+          git config user.email "bot@ijbmrs.org"
+          git add notifications.json notices sitemap.xml
+          git commit -m "Add notification from issue"
+          git push
